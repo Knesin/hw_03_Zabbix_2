@@ -1,0 +1,18 @@
+---
+- hosts: zabbix_agent
+  become: yes
+
+  tasks:
+    - name: Add UserParameter task6 to zabbix_agentd.conf
+      ansible.builtin.blockinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        block: |
+          UserParameter=task6[*],case "$1" in "1") echo "Клочек Максим Евгеньевич" ;; "2") date ;; esac
+        marker: "# {mark} ANSIBLE TASK6"
+      notify: Restart zabbix-agent
+
+  handlers:
+    - name: Restart zabbix-agent
+      ansible.builtin.systemd:
+        name: zabbix-agent
+        state: restarted
